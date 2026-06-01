@@ -1,54 +1,66 @@
-// 首先定义模型配置
+// 火山 Agent Plan 统一模型配置
+// 说明：下面所有模型都走火山方舟 / Agent Plan，只需要在 Cloudflare 里配置 ARK_API_KEY。
+// baseURL 使用 OpenAI 兼容接口地址：https://ark.cn-beijing.volces.com/api/v3
 export const modelConfigs = [
   {
-    model: "qwen-plus",
-    apiKey: "DASHSCOPE_API_KEY", // 这里存储环境变量的 key 名称
-    baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1"
-  },
-  {
-    model: "deepseek-v3-250324",
+    // 调度器、游戏主持人、千问：使用 Agent Plan 自动调度
+    model: "auto",
     apiKey: "ARK_API_KEY",
     baseURL: "https://ark.cn-beijing.volces.com/api/v3"
   },
   {
-    model: "hunyuan-turbos-latest",
-    apiKey: "HUNYUAN_API_KEY1",
-    baseURL: "https://api.hunyuan.cloud.tencent.com/v1"
-  },
-  {
-    model: "doubao-1-5-lite-32k-250115",//豆包模型|火山引擎接入点（改成自己的）
+    // DeepSeek 角色：速度快、消耗低，适合日常深度问答
+    model: "deepseek-v4-flash",
     apiKey: "ARK_API_KEY",
     baseURL: "https://ark.cn-beijing.volces.com/api/v3"
   },
   {
-    model: "ep-20250306223646-szzkw",//deepseekv火山引擎接入点（改成自己的）
-    apiKey: "ARK_API_KEY1",
+    // 元宝角色：通用生产级模型
+    model: "doubao-seed-2.0-lite",
+    apiKey: "ARK_API_KEY",
     baseURL: "https://ark.cn-beijing.volces.com/api/v3"
   },
   {
-    model: "glm-4-air",
-    apiKey: "GLM_API_KEY",
-    baseURL: "https://open.bigmodel.cn/api/paas/v4/"
+    // 豆包、豆沙、豆奶、豆爸、豆妈等角色：通用轻量模型
+    model: "doubao-seed-2.0-lite",
+    apiKey: "ARK_API_KEY",
+    baseURL: "https://ark.cn-beijing.volces.com/api/v3"
   },
   {
-    model: "qwen-turbo",//调度模型
-    apiKey: "DASHSCOPE_API_KEY", // 这里存储环境变量的 key 名称
-    baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1"
+    // 复杂任务备用模型：更强但消耗更高
+    model: "deepseek-v4-pro",
+    apiKey: "ARK_API_KEY",
+    baseURL: "https://ark.cn-beijing.volces.com/api/v3"
   },
   {
-    model: "deepseek-chat",
-    apiKey: "DEEPSEEK_API_KEY",
-    baseURL: "https://api.deepseek.com/v1"
+    // 智谱角色：使用火山 Agent Plan 里的 GLM-5.1
+    model: "glm-5.1",
+    apiKey: "ARK_API_KEY",
+    baseURL: "https://ark.cn-beijing.volces.com/api/v3"
   },
   {
-    model: "moonshot-v1-8k",
-    apiKey: "KIMI_API_KEY",
-    baseURL: "https://api.moonshot.cn/v1"
+    // 调度模型：自动调度
+    model: "auto",
+    apiKey: "ARK_API_KEY",
+    baseURL: "https://ark.cn-beijing.volces.com/api/v3"
   },
   {
-    model: "ernie-3.5-128k",
-    apiKey: "BAIDU_API_KEY",
-    baseURL: "https://qianfan.baidubce.com/v2"
+    // DeepSeek 强模型备用配置
+    model: "deepseek-v4-pro",
+    apiKey: "ARK_API_KEY",
+    baseURL: "https://ark.cn-beijing.volces.com/api/v3"
+  },
+  {
+    // Kimi 角色：使用火山 Agent Plan 里的 Kimi-K2.6
+    model: "kimi-k2.6",
+    apiKey: "ARK_API_KEY",
+    baseURL: "https://ark.cn-beijing.volces.com/api/v3"
+  },
+  {
+    // 文小言角色：原来走百度，这里先用 auto 代替，保证能回复
+    model: "auto",
+    apiKey: "ARK_API_KEY",
+    baseURL: "https://ark.cn-beijing.volces.com/api/v3"
   }
 ] as const;
 export type ModelType = typeof modelConfigs[number]["model"];
@@ -248,4 +260,3 @@ export function generateAICharacters(groupName: string, allTags: string): AIChar
     }
   ];
 }
-
