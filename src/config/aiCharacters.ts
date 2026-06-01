@@ -1,69 +1,91 @@
-// 火山 Agent Plan 统一模型配置
-// 说明：下面所有模型都走火山 Agent Plan 的 OpenAI 兼容接口。
-// Cloudflare Pages 最少需要配置：ARK_API_KEY、GOOGLE_CLIENT_ID、GOOGLE_CLIENT_SECRET、JWT_SECRET。
-// Agent Plan OpenAI 兼容 Base URL 必须使用：https://ark.cn-beijing.volces.com/api/plan/v3
+// 火山 Agent Plan 稳定版模型配置
+// 目标：先保证 botgroup.chat 所有 AI 角色都能稳定回复，再逐个切回更强模型。
+// Cloudflare Pages 环境变量至少需要：ARK_API_KEY、GOOGLE_CLIENT_ID、GOOGLE_CLIENT_SECRET、JWT_SECRET。
+// Agent Plan OpenAI 兼容 Base URL： https://ark.cn-beijing.volces.com/api/plan/v3
+
+const ARK_AGENT_PLAN_BASE_URL = "https://ark.cn-beijing.volces.com/api/plan/v3";
+
 export const modelConfigs = [
   {
-    // 调度器、游戏主持人、千问：默认 Auto，自动按效果 + 速度调度
-    model: "auto",
+    // 调度器/千问兜底：只做标签分类和短回复，使用 mini，降低超时概率
+    model: "doubao-seed-2.0-mini",
     apiKey: "ARK_API_KEY",
-    baseURL: "https://ark.cn-beijing.volces.com/api/plan/v3"
+    baseURL: ARK_AGENT_PLAN_BASE_URL
   },
   {
-    // DeepSeek 角色：低成本、速度快，适合日常深度问答
+    // DeepSeek 角色：速度优先，适合日常问答/代码/推理
     model: "deepseek-v4-flash",
     apiKey: "ARK_API_KEY",
-    baseURL: "https://ark.cn-beijing.volces.com/api/plan/v3"
+    baseURL: ARK_AGENT_PLAN_BASE_URL
   },
   {
-    // 元宝角色：通用生产级模型
+    // 元宝角色：生产稳定优先
     model: "doubao-seed-2.0-lite",
     apiKey: "ARK_API_KEY",
-    baseURL: "https://ark.cn-beijing.volces.com/api/plan/v3"
+    baseURL: ARK_AGENT_PLAN_BASE_URL
   },
   {
-    // 豆包、豆沙、豆奶、豆爸、豆妈等角色：通用轻量模型
+    // 豆包家族：统一使用 lite，避免多角色并发时触发响应超时
     model: "doubao-seed-2.0-lite",
     apiKey: "ARK_API_KEY",
-    baseURL: "https://ark.cn-beijing.volces.com/api/plan/v3"
+    baseURL: ARK_AGENT_PLAN_BASE_URL
   },
   {
-    // 复杂任务备用：更强但额度消耗更快
+    // 复杂任务备用：更强但可能更慢，默认不绑定普通角色
     model: "doubao-seed-2.0-pro",
     apiKey: "ARK_API_KEY",
-    baseURL: "https://ark.cn-beijing.volces.com/api/plan/v3"
+    baseURL: ARK_AGENT_PLAN_BASE_URL
   },
   {
-    // 智谱角色：使用火山 Agent Plan 里的 GLM-5.1
-    model: "glm-5.1",
+    // 智谱角色兜底：先用 lite 保证能回复；稳定后可改成 glm-5.1
+    model: "doubao-seed-2.0-lite",
     apiKey: "ARK_API_KEY",
-    baseURL: "https://ark.cn-beijing.volces.com/api/plan/v3"
+    baseURL: ARK_AGENT_PLAN_BASE_URL
   },
   {
-    // 调度模型：自动调度
+    // 自动调度备用：不建议默认给高频角色用，避免偶发路由到慢模型
     model: "auto",
     apiKey: "ARK_API_KEY",
-    baseURL: "https://ark.cn-beijing.volces.com/api/plan/v3"
+    baseURL: ARK_AGENT_PLAN_BASE_URL
   },
   {
-    // DeepSeek 强模型备用：复杂问题使用，额度消耗更高
+    // DeepSeek 强模型备用：稳定后可把 DeepSeek 角色改成 modelConfigs[7]
     model: "deepseek-v4-pro",
     apiKey: "ARK_API_KEY",
-    baseURL: "https://ark.cn-beijing.volces.com/api/plan/v3"
+    baseURL: ARK_AGENT_PLAN_BASE_URL
   },
   {
-    // Kimi 角色：使用火山 Agent Plan 里的 Kimi-K2.6
+    // Kimi 角色兜底：先用 lite 保证能回复；稳定后可改成 kimi-k2.6
+    model: "doubao-seed-2.0-lite",
+    apiKey: "ARK_API_KEY",
+    baseURL: ARK_AGENT_PLAN_BASE_URL
+  },
+  {
+    // 文小言角色兜底：原百度接口容易受独立鉴权/接口兼容影响，这里统一走 Agent Plan
+    model: "doubao-seed-2.0-lite",
+    apiKey: "ARK_API_KEY",
+    baseURL: ARK_AGENT_PLAN_BASE_URL
+  },
+  {
+    // GLM 备用：需要测试稳定性后再绑定到 ai8
+    model: "glm-5.1",
+    apiKey: "ARK_API_KEY",
+    baseURL: ARK_AGENT_PLAN_BASE_URL
+  },
+  {
+    // Kimi 备用：需要测试稳定性后再绑定到 ai9
     model: "kimi-k2.6",
     apiKey: "ARK_API_KEY",
-    baseURL: "https://ark.cn-beijing.volces.com/api/plan/v3"
+    baseURL: ARK_AGENT_PLAN_BASE_URL
   },
   {
-    // 文小言角色：原来走百度，这里先用 Auto 兜底，保证能回复
-    model: "auto",
+    // Minimax 备用
+    model: "minimax-m2.7",
     apiKey: "ARK_API_KEY",
-    baseURL: "https://ark.cn-beijing.volces.com/api/plan/v3"
+    baseURL: ARK_AGENT_PLAN_BASE_URL
   }
 ] as const;
+
 export type ModelType = typeof modelConfigs[number]["model"];
 
 export interface AICharacter {
@@ -99,7 +121,7 @@ export function generateAICharacters(groupName: string, allTags: string): AIChar
       name: "游戏主持人", //《谁是卧底》
       personality: "SpyMaster",
       model: modelConfigs[0].model,
-      avatar: "/img/spymaster.jpg",  // 如果有头像资源可以添加路径,
+      avatar: "/img/spymaster.jpg",
       custom_prompt: `你是一位谁是卧底游戏主持人，你当前在一个叫"${groupName}" 的聊天群里`,
       stages: [
         {
